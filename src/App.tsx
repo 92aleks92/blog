@@ -1,24 +1,72 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
+import ArticleDetail from "./client/articleDetail";
+import ArticleList from "./admin/articleList";
+import Login from "./client/login";
+import ClientArticleList from "./client/articleList";
+import "bootstrap/dist/css/bootstrap.min.css";
+import GuardRoute from "./hoc/guardRoute";
+import ArticleForm from "./admin/articleForm";
 
 function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Navigate replace to={"articles"} />,
+    },
+    {
+      path: "login",
+      element: <Login />,
+    },
+    {
+      path: "articles",
+      element: <ClientArticleList />,
+      children: [],
+    },
+    {
+      path: "articles/:id",
+      element: <ArticleDetail />,
+    },
+    {
+      path: "admin",
+      children: [
+        {
+          path: "articles",
+          element: (
+            <GuardRoute>
+              <ArticleList />
+            </GuardRoute>
+          ),
+          children: [],
+        },
+        {
+          path: "articles/:id/edit",
+          element: (
+            <GuardRoute>
+              <ArticleForm />
+            </GuardRoute>
+          ),
+        },
+        {
+          path: "new-article",
+          element: (
+            <GuardRoute>
+              <ArticleForm />
+            </GuardRoute>
+          ),
+        },
+      ],
+    },
+  ]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <RouterProvider router={router} />
     </div>
   );
 }
